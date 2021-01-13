@@ -34,8 +34,25 @@ class EnterFace(pygame.sprite.Sprite):
         self.rect.y = 0
 
 
+class Car(pygame.sprite.Sprite):
+    image = load_image('car.png')
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = Car.image
+        self.rect = self.image.get_rect()
+        self.rect.x = -500
+        self.rect.y = -150
+
+    def update(self):
+        if self.rect.x != -225:
+            self.rect.x += 1
+
+
+car_sprites = pygame.sprite.Group()
 main_sprites = pygame.sprite.Group()
 EnterFace(main_sprites)
+Car(car_sprites)
 running = True
 
 while running:
@@ -47,5 +64,7 @@ while running:
             running = False
     screen.fill((199, 195, 194))
     main_sprites.draw(screen)
+    car_sprites.draw(screen)
+    car_sprites.update()
     pygame.display.flip()
 pygame.quit()
