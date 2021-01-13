@@ -34,7 +34,10 @@ class EnterFace(pygame.sprite.Sprite):
         self.rect.y = 0
 
 
+main_sprites = pygame.sprite.Group()
+EnterFace(main_sprites)
 running = True
+
 while running:
     # внутри игрового цикла ещё один цикл
     # приема и обработки сообщений
@@ -42,6 +45,7 @@ while running:
         # при закрытии окна
         if event.type == pygame.QUIT:
             running = False
-
+    screen.fill((199, 195, 194))
+    main_sprites.draw(screen)
     pygame.display.flip()
 pygame.quit()
