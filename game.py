@@ -1,31 +1,40 @@
 import pygame
 import sys
 import os
-import random
-import signal
 import time
 
 # signal.alarm(2)
 # time.sleep(5)
 # signal.alarm(0)
 pygame.init()
+clock = pygame.time.Clock()
 size = width, height = 1280, 720
 screen = pygame.display.set_mode(size)
 lst = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-random.shuffle(lst)
 panels = pygame.sprite.Group()
 red_button_sprites = pygame.sprite.Group()
 green_button_sprites = pygame.sprite.Group()
 blue_button_sprites = pygame.sprite.Group()
 car_sprites = pygame.sprite.Group()
 main_sprites = pygame.sprite.Group()
-
+lst1 = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
+images = []
 running = True
+reverse = False
+yeah = False
+load_sprites = pygame.sprite.Group()
 off_button = pygame.sprite.Group()
 come_car = False
 check = False
+new = True
+i = 0
+black = pygame.sprite.Group()
 sound = pygame.mixer.Sound('data/54047__guitarguy1985__buzzer.wav')
 sound1 = pygame.mixer.Sound('data/jg-032316-sfx-elevator-button.mp3')
+sound2 = pygame.mixer.Sound('data/race-car-driving-away_f1l83s4d-[AudioTrimmer.com].mp3')
+sound3 = pygame.mixer.Sound('data/race-car-driving-away_f1l83s4d-[AudioTrimmer.com] (1).mp3')
+loading = False
+sound4 = pygame.mixer.Sound('data/72372e56a594c6f.mp3')
 
 
 def load_image(name, colorkey=None):
@@ -56,7 +65,9 @@ class EnterFace(pygame.sprite.Sprite):
 
 
 class Car(pygame.sprite.Sprite):
+    reverse_image = load_image('reverse_car.png')
     image = load_image('car.png')
+    normal_car = load_image('car.png')
 
     def __init__(self, group):
         super().__init__(group)
@@ -64,14 +75,36 @@ class Car(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = -500
         self.rect.y = -150
+        self.n = 0
 
     def update(self):
-        global come_car, check
-        if self.rect.x != 15:
-            self.rect.x += 1
-        else:
-            come_car = False
-            check = True
+        global come_car, check, x, y, reverse, yeah, new, loading
+        if reverse:
+            self.image = self.reverse_image
+            if self.rect.x != -600:
+                self.rect.x -= 5
+            else:
+                self.image = self.normal_car
+                check = False
+                reverse = False
+                new = True
+        elif come_car:
+            if self.rect.x != 15:
+                self.rect.x += 5
+            else:
+                loading = True
+                check = True
+                come_car = False
+                x = 490
+                y = 298
+        elif yeah:
+            if self.rect.x != 1005:
+                self.rect.x += 5
+            else:
+                check = False
+                yeah = False
+                self.rect.x = -500
+                new = True
 
 
 class GreenButton(pygame.sprite.Sprite):
@@ -85,10 +118,14 @@ class GreenButton(pygame.sprite.Sprite):
         self.rect.y = 309
 
     def update(self, *args):
-        global check
+        global check, yeah, i
         if args and args[0].type == pygame.MOUSEBUTTONDOWN and \
                 self.rect.collidepoint(args[0].pos) and check:
             sound1.play()
+            check = False
+            yeah = True
+            sound3.play()
+            i += 1
 
 
 class RedButton(pygame.sprite.Sprite):
@@ -102,10 +139,15 @@ class RedButton(pygame.sprite.Sprite):
         self.rect.y = 310
 
     def update(self, *args):
-        global check
+        global check, reverse, i
         if args and args[0].type == pygame.MOUSEBUTTONDOWN and \
                 self.rect.collidepoint(args[0].pos) and check:
             sound1.play()
+            time.sleep(0.1)
+            check = False
+            reverse = True
+            sound2.play()
+            i += 1
 
 
 class BlueButton(pygame.sprite.Sprite):
@@ -119,12 +161,14 @@ class BlueButton(pygame.sprite.Sprite):
         self.rect.y = 574
 
     def update(self, *args):
-        global come_car
+        global come_car, new
         if args and args[0].type == pygame.MOUSEBUTTONDOWN and \
-                self.rect.collidepoint(args[0].pos):
+                self.rect.collidepoint(args[0].pos) and new:
             sound.play()
             time.sleep(2)
+            sound2.play()
             come_car = True
+            new = False
 
 
 class Off(pygame.sprite.Sprite):
@@ -134,8 +178,8 @@ class Off(pygame.sprite.Sprite):
         super().__init__(group)
         self.image = Off.image
         self.rect = self.image.get_rect()
-        self.rect.x = 432
-        self.rect.y = 236
+        self.rect.x = 1230
+        self.rect.y = 0
 
     def update(self, *args):
         if args and args[0].type == pygame.MOUSEBUTTONDOWN and \
@@ -144,24 +188,59 @@ class Off(pygame.sprite.Sprite):
 
 
 class Panel(pygame.sprite.Sprite):
-    global lst
-    image = load_image(lst[0] + '.png')
-    del lst[0]
+    image = load_image('1.png')
+    image1 = load_image('2.png')
+    image2 = load_image('3.png')
+    image3 = load_image('4.png')
+    image4 = load_image('5.png')
+    image5 = load_image('6.png')
+    image6 = load_image('7.png')
+    image7 = load_image('8.png')
+    image8 = load_image('9.png')
+    image9 = load_image('10.png')
 
     def __init__(self, group):
         super().__init__(group)
         self.image = Panel.image
         self.rect = self.image.get_rect()
-        self.rect.x = 432
-        self.rect.y = 236
+        self.rect.x = -700
+        self.rect.y = -700
+
+    def update(self, *args):
+        global i
+        if i == 0:
+            self.rect.x = 432
+            self.rect.y = 236
+        if i == 1:
+            self.image = self.image1
+        if i == 2:
+            self.image = self.image2
+        if i == 3:
+            self.image = self.image3
+        if i == 4:
+            self.image = self.image4
+        if i == 5:
+            self.image = self.image5
+        if i == 6:
+            self.image = self.image6
+        if i == 7:
+            self.image = self.image7
+        if i == 8:
+            self.image = self.image8
+        if i == 9:
+            self.image = self.image9
 
 
+x = -500
+y = -500
 EnterFace(main_sprites)
 Car(car_sprites)
 Off(off_button)
 GreenButton(green_button_sprites)
 BlueButton(blue_button_sprites)
 RedButton(red_button_sprites)
+Panel(panels)
+
 while running:
     # внутри игрового цикла ещё один цикл
     # приема и обработки сообщений
@@ -172,14 +251,19 @@ while running:
         blue_button_sprites.update(event)
         green_button_sprites.update(event)
         red_button_sprites.update(event)
-    screen.fill((199, 195, 194))
+        black.update()
+        if check:
+            panels.update(event)
+    screen.fill((110, 111, 109))
     main_sprites.draw(screen)
     blue_button_sprites.draw(screen)
     green_button_sprites.draw(screen)
     red_button_sprites.draw(screen)
     car_sprites.draw(screen)
     off_button.draw(screen)
-    if come_car:
-        car_sprites.update()
+    car_sprites.update()
+    black.draw(screen)
+    panels.draw(screen)
+    clock.tick(60)
     pygame.display.flip()
 pygame.quit()
