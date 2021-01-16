@@ -35,6 +35,7 @@ sound2 = pygame.mixer.Sound('data/race-car-driving-away_f1l83s4d-[AudioTrimmer.c
 sound3 = pygame.mixer.Sound('data/race-car-driving-away_f1l83s4d-[AudioTrimmer.com] (1).mp3')
 loading = False
 sound4 = pygame.mixer.Sound('data/72372e56a594c6f.mp3')
+menu = True
 
 
 def load_image(name, colorkey=None):
@@ -182,9 +183,64 @@ class Off(pygame.sprite.Sprite):
         self.rect.y = 0
 
     def update(self, *args):
+        global menu
         if args and args[0].type == pygame.MOUSEBUTTONDOWN and \
                 self.rect.collidepoint(args[0].pos):
-            pass
+            menu = True
+
+
+class Start(pygame.sprite.Sprite):
+    image = load_image('start.png')
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = Start.image
+        self.rect = self.image.get_rect()
+        self.rect.x = 540
+        self.rect.y = 291
+
+    def update(self, *args):
+        global menu
+        if args and args[0].type == pygame.MOUSEBUTTONDOWN and \
+                self.rect.collidepoint(args[0].pos):
+            menu = False
+
+
+class Exit(pygame.sprite.Sprite):
+    image = load_image('exit.png')
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = Exit.image
+        self.rect = self.image.get_rect()
+        self.rect.x = 540
+        self.rect.y = 428
+
+    def update(self, *args):
+        global running
+        if args and args[0].type == pygame.MOUSEBUTTONDOWN and \
+                self.rect.collidepoint(args[0].pos):
+            running = False
+
+
+class Menu(pygame.sprite.Sprite):
+    image = load_image('maxresdefault.png')
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = Menu.image
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 0
+
+    def update(self):
+        global menu
+        if menu:
+            self.rect.x = 0
+            self.rect.y = 0
+        else:
+            self.rect.x = 1280
+            self.rect.y = 720
 
 
 class Panel(pygame.sprite.Sprite):
@@ -240,30 +296,51 @@ GreenButton(green_button_sprites)
 BlueButton(blue_button_sprites)
 RedButton(red_button_sprites)
 Panel(panels)
+menuu = pygame.sprite.Group()
+Menu(menuu)
+start = pygame.sprite.Group()
+Start(start)
+ex = pygame.sprite.Group()
+Exit(ex)
 
 while running:
     # внутри игрового цикла ещё один цикл
-    # приема и обработки сообщений
-    for event in pygame.event.get():
-        # при закрытии окна
-        if event.type == pygame.QUIT:
-            running = False
-        blue_button_sprites.update(event)
-        green_button_sprites.update(event)
-        red_button_sprites.update(event)
-        black.update()
-        if check:
-            panels.update(event)
-    screen.fill((110, 111, 109))
-    main_sprites.draw(screen)
-    blue_button_sprites.draw(screen)
-    green_button_sprites.draw(screen)
-    red_button_sprites.draw(screen)
-    car_sprites.draw(screen)
-    off_button.draw(screen)
-    car_sprites.update()
-    black.draw(screen)
-    panels.draw(screen)
-    clock.tick(60)
-    pygame.display.flip()
+    if menu:
+        for event in pygame.event.get():
+            # при закрытии окна
+            if event.type == pygame.QUIT:
+                running = False
+            menuu.update()
+            start.update(event)
+            ex.update(event)
+        screen.fill((110, 111, 109))
+        menuu.draw(screen)
+        start.draw(screen)
+        ex.draw(screen)
+        clock.tick(60)
+        pygame.display.flip()
+    else:
+        for event in pygame.event.get():
+            # при закрытии окна
+            if event.type == pygame.QUIT:
+                running = False
+            blue_button_sprites.update(event)
+            green_button_sprites.update(event)
+            red_button_sprites.update(event)
+            black.update()
+            off_button.update(event)
+            if check:
+                panels.update(event)
+        screen.fill((110, 111, 109))
+        main_sprites.draw(screen)
+        blue_button_sprites.draw(screen)
+        green_button_sprites.draw(screen)
+        red_button_sprites.draw(screen)
+        car_sprites.draw(screen)
+        off_button.draw(screen)
+        car_sprites.update()
+        black.draw(screen)
+        panels.draw(screen)
+        clock.tick(60)
+        pygame.display.flip()
 pygame.quit()
