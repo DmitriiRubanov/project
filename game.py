@@ -302,7 +302,8 @@ start = pygame.sprite.Group()
 Start(start)
 ex = pygame.sprite.Group()
 Exit(ex)
-
+pygame.mixer.music.load('data/Papers, Please - Arstotzkan Anthem.mp3')
+pygame.mixer.music.play()
 while running:
     # внутри игрового цикла ещё один цикл
     if menu:
