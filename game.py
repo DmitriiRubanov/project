@@ -12,6 +12,7 @@ import sqlite3
 
 pygame.init()
 clock = pygame.time.Clock()
+rul = False
 size = width, height = 1280, 720
 screen = pygame.display.set_mode(size)
 lst = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
@@ -233,10 +234,11 @@ class Start(pygame.sprite.Sprite):
         self.rect.y = 291
 
     def update(self, *args):
-        global menu
+        global menu, rul
         if args and args[0].type == pygame.MOUSEBUTTONDOWN and \
                 self.rect.collidepoint(args[0].pos):
             menu = False
+            rul = True
 
 
 class Exit(pygame.sprite.Sprite):
@@ -335,6 +337,18 @@ class ExitGame(pygame.sprite.Sprite):
                 self.rect.collidepoint(args[0].pos):
             running = False
 
+
+class Rules(pygame.sprite.Sprite):
+    image = load_image('правила.jpg')
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.image = Rules.image
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 0
+
+
 x = -500
 y = -500
 EnterFace(main_sprites)
@@ -346,6 +360,8 @@ RedButton(red_button_sprites)
 Panel(panels)
 menuu = pygame.sprite.Group()
 Menu(menuu)
+rule = pygame.sprite.Group()
+Rules(rule)
 start = pygame.sprite.Group()
 Start(start)
 ex = pygame.sprite.Group()
@@ -395,6 +411,18 @@ while running:
             screen.blit(text, (100, 170 + 50 * i))
         clock.tick(60)
         pygame.display.flip()
+    elif rul:
+        if menu:
+            for event in pygame.event.get():
+                # при закрытии окна
+                if event.type == pygame.QUIT:
+                    running = False
+        screen.fill((110, 111, 109))
+        rule.draw(screen)
+        clock.tick(60)
+        pygame.display.flip()
+        time.sleep(10)
+        rul = False
     else:
         for event in pygame.event.get():
             # при закрытии окна
