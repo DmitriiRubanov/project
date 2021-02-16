@@ -13,6 +13,7 @@ import sqlite3
 pygame.init()
 clock = pygame.time.Clock()
 rul = False
+pravilapokaxivalis = False
 size = width, height = 1280, 720
 screen = pygame.display.set_mode(size)
 lst = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
@@ -234,11 +235,15 @@ class Start(pygame.sprite.Sprite):
         self.rect.y = 291
 
     def update(self, *args):
-        global menu, rul
+        global menu, rul, pravilapokaxivalis
         if args and args[0].type == pygame.MOUSEBUTTONDOWN and \
                 self.rect.collidepoint(args[0].pos):
             menu = False
-            rul = True
+            if pravilapokaxivalis:
+                pass
+            else:
+                rul = True
+                pravilapokaxivalis = True
 
 
 class Exit(pygame.sprite.Sprite):
