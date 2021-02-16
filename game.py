@@ -2,11 +2,8 @@ import pygame
 import sys
 import os
 import time
-from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import QWidget, QApplication
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QApplication
 from PyQt5 import uic
 import sqlite3
 
